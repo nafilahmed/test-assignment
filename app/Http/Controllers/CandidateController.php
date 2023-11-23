@@ -7,7 +7,6 @@ use App\Models\Company;
 use App\Models\ContactCandidate;
 use App\Models\HiredCandidate;
 use App\Models\Wallet;
-use GuzzleHttp\Psr7\Request;
 
 class CandidateController extends Controller
 {
@@ -15,7 +14,7 @@ class CandidateController extends Controller
     {
         $coins = Company::find(1)->wallet->coins;
 
-        return view('candidates.index', compact('candidates', 'coins'));
+        return view('candidates.index', compact('coins'));
     }
 
     public function getCandidate()
