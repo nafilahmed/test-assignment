@@ -30,6 +30,6 @@ class ContactMail extends Mailable
      */
     public function build()
     {
-        return $this->subject('Congratulation You are Short Listed')->view('emails.contact_email_template');
+        return $this->subject('Congratulation to you')->view('emails.email_template');
     }
 }

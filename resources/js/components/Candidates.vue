@@ -11,29 +11,25 @@
           <p class="text-gray-700 text-base">{{ candidate.description }}</p>
         </div>
         <div class="px-6 pt-4 pb-2"><span v-for="strength in JSON.parse(candidate.strengths)"
-            class="inline-block bg-gray-200  rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{{ strength }}</span>
+            class="inline-block bg-gray-200  rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{{
+              strength }}</span>
         </div>
         <div class="px-6 pb-2"><span v-for="skill in JSON.parse(candidate.soft_skills)"
-            class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{{ skill }}</span>
+            class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{{ skill
+            }}</span>
         </div>
         <div class="p-6 float-right">
-          <VueLoadingButton
-            aria-label="Post message"
+          <VueLoadingButton aria-label="Post message"
             class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
-            @click.native="contactCandidate(candidate.id)"
-            :loading="isLoading"
-            :disabled="(coins < 1) || candidate.contact"
-          >
+            @click.native="contactCandidate(candidate.id)" :loading="isLoading"
+            :disabled="(coins < 1) || candidate.contact">
             <span v-if=candidate.contact>Contacted</span>
             <span v-else>Contact</span>
           </VueLoadingButton>
-          <VueLoadingButton
-            aria-label="Post message"
+          <VueLoadingButton aria-label="Post message"
             class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
-            @click.native="contactCandidate(candidate.id)"
-            :loading="isLoading"
-          >
-            <span v-if=candidate.contact>Hired</span>
+            @click.native="hireCandidate(candidate.id)" :loading="isLoading">
+            <span v-if=candidate.hired>Hired</span>
             <span v-else>Hire</span>
           </VueLoadingButton>
         </div>
@@ -45,7 +41,7 @@
 import VueLoadingButton from 'vue-loading-button';
 
 export default {
-  props: ['candidates','coins'],
+  props: ['candidates', 'coins'],
   data() {
     return {
       desiredStrengths: [
@@ -56,13 +52,24 @@ export default {
   },
   methods: {
     contactCandidate: async function (candidateId) {
-
-      console.log(this.coins);
       this.isLoading = true;
       await axios.post('/candidates-contact/' + candidateId).then(({ data }) => {
         this.isLoading = false;
-        console.log(data);
-        location.reload();
+        if(data.status_code == 200){
+          location.reload();
+        }
+      }).catch(error => {
+        console.log(error);
+      })
+    },
+    
+    hireCandidate: async function (candidateId) {
+      this.isLoading = true;
+      await axios.post('/candidates-hire/' + candidateId).then(({ data }) => {
+        this.isLoading = false;
+        if(data.status_code == 200){
+          location.reload();
+        }
       }).catch(error => {
         console.log(error);
       })

@@ -11,7 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use App\Mail\ContactMail;
 use Mail;
 
-class SendContactEmailQueueJob implements ShouldQueue
+class SendEmailQueueJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -36,12 +36,7 @@ class SendContactEmailQueueJob implements ShouldQueue
      */
     public function handle()
     {
-        $details = [
-            'title' => 'Congratulation You are Short Listed',
-            'body' => "By ".$this->data['name']
-        ];
-        
-        $email = new ContactMail($details);
+        $email = new ContactMail($this->data);
         Mail::to($this->sendMail)->send($email);
     }
 }
