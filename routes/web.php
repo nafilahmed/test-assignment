@@ -19,4 +19,4 @@ Route::get('/', function () {
 });
 
 Route::get('candidates-list', [CandidateController::class, 'index']);
-Route::post('candidates-contact', [CandidateController::class, 'contact']);
+Route::post('candidates-contact/{id}', [CandidateController::class, 'contact']);
