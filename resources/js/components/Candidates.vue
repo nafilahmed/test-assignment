@@ -11,7 +11,7 @@
           <p class="text-gray-700 text-base">{{ candidate.description }}</p>
         </div>
         <div class="px-6 pt-4 pb-2"><span v-for="strength in JSON.parse(candidate.strengths)"
-            class="inline-block bg-gray-200  rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{{
+            class="inline-block rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2" :class="[desiredStrengths.includes(strength) ? 'bg-green-200' : 'bg-gray-200']">{{
               strength }}</span>
         </div>
         <div class="px-6 pb-2"><span v-for="skill in JSON.parse(candidate.soft_skills)"
@@ -28,7 +28,10 @@
           </VueLoadingButton>
           <VueLoadingButton aria-label="Post message"
             class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
-            @click.native="hireCandidate(candidate.id)" :loading="isLoading">
+            @click.native="hireCandidate(candidate.id)"
+            :loading="isLoading"
+            :disabled="!candidate.contact || candidate.hired"
+          >
             <span v-if=candidate.hired>Hired</span>
             <span v-else>Hire</span>
           </VueLoadingButton>
