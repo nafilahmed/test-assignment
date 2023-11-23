@@ -24,6 +24,7 @@
       <div class="w-full p-6 bg-teal-100 text-right font-bold">Your wallet has: {{$coins ?? '?' }} coins</div>
       <candidates :candidates="{{ json_encode($candidates) }}" :coins="{{$coins}}">
       </candidates>
+      <mvp_candidates />
    </div>
 
    <script src="{{ mix('/js/app.js') }}"></script>
