@@ -4,7 +4,7 @@
       <h1 class="text-4xl font-bold">Candidates</h1>
     </div>
     <div class="p-10 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-5">
-      <div v-for="candidate in candidates" class="rounded overflow-hidden shadow-lg" v-show="Object.values(JSON.parse(candidate.strengths)).indexOf('Wordpress') < 0">
+      <div v-for="candidate in allCandidates" class="rounded overflow-hidden shadow-lg" v-show="Object.values(JSON.parse(candidate.strengths)).indexOf('Wordpress') < 0">
         <img class="w-full" src="/avatar.png" alt="">
         <div class="px-6 py-4">
           <div class="font-bold text-xl mb-2">{{ candidate.name }}</div>
@@ -44,7 +44,7 @@
 import VueLoadingButton from 'vue-loading-button';
 
 export default {
-  props: ['candidates', 'coins'],
+  props: ['coins'],
   data() {
     return {
       desiredStrengths: [
@@ -54,30 +54,46 @@ export default {
         'Team player', 'Leadership', 'Conflict management', 'Diplomacy'
       ],
       isLoading: false,
+      allCandidates: {},
     }
   },
+  mounted() {
+    this.getCandidates();
+  },
   methods: {
-    contactCandidate: async function (candidateId) {
-      this.isLoading = true;
-      await axios.post('/candidates-contact/' + candidateId).then(({ data }) => {
-        this.isLoading = false;
-        if(data.status_code == 200){
-          location.reload();
+
+    getCandidates: async function () {
+      await axios.get('api/candidates').then(({ data }) => {
+
+        if (data.status_code == 200) {
+          this.allCandidates = data.candidates;
         }
       }).catch(error => {
-        console.log(error);
+        console.error(error);
+      })
+    },
+
+    contactCandidate: async function (candidateId) {
+      this.isLoading = true;
+      await axios.post('api/candidates-contact/' + candidateId).then(({ data }) => {
+        this.isLoading = false;
+        if(data.status_code == 200){
+          this.getCandidates();
+        }
+      }).catch(error => {
+        console.error(error);
       })
     },
     
     hireCandidate: async function (candidateId) {
       this.isLoading = true;
-      await axios.post('/candidates-hire/' + candidateId).then(({ data }) => {
+      await axios.post('api/candidates-hire/' + candidateId).then(({ data }) => {
         this.isLoading = false;
         if(data.status_code == 200){
-          location.reload();
+          this.getCandidates();
         }
       }).catch(error => {
-        console.log(error);
+        console.error(error);
       })
     },
   },

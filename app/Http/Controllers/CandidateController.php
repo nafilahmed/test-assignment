@@ -11,36 +11,43 @@ use GuzzleHttp\Psr7\Request;
 
 class CandidateController extends Controller
 {
-    public function index(){
+    public function index()
+    {
+        $candidates = Candidate::with(['contact', 'hired'])->get();
+        $coins = Company::find(1)->wallet->coins;
 
-    $candidates = Candidate::with(['contact','hired'])->get();
-    $coins = Company::find(1)->wallet->coins;
-    
-    return view('candidates.index', compact('candidates', 'coins'));
-}
+        return view('candidates.index', compact('candidates', 'coins'));
+    }
 
-    public function contact($id) {
+    public function getCandidate()
+    {
+        $candidates = Candidate::with(['contact', 'hired'])->get();
 
+        return response(['status_code' => 200, 'candidates' => $candidates]);
+    }
+
+    public function contact($id)
+    {
         $status = 200;
 
         try {
-            
+
             ContactCandidate::updateOrCreate([
                 'company_id' => 1,
                 'candidate_id' => $id,
             ]);
-            
+
             $data = Company::find(1);
             $email = Candidate::find($id);
 
             $details = [
                 'title' => 'Congratulation you are shorted listed',
-                'body' => "By ".$data->name
+                'body' => "By " . $data->name
             ];
 
-            dispatch(new \App\Jobs\SendEmailQueueJob($email->email,$details));
+            dispatch(new \App\Jobs\SendEmailQueueJob($email->email, $details));
 
-            Wallet::where('company_id', 1)->decrement('coins',5);
+            Wallet::where('company_id', 1)->decrement('coins', 5);
 
             $message = 'Contact email send successfully';
         } catch (\Illuminate\Database\QueryException $qe) {
@@ -57,33 +64,34 @@ class CandidateController extends Controller
         return response(['status_code' => $status, 'message' => $message]);
     }
 
-    public function hire($id){
+    public function hire($id)
+    {
         $status = 200;
 
         try {
 
             $candidate = Candidate::find($id);
 
-            if($candidate->contact){
-                
+            if ($candidate->contact) {
+
                 HiredCandidate::updateOrCreate([
                     'company_id' => 1,
                     'candidate_id' => $id,
                 ]);
-                
+
                 $data = Company::find(1);
-    
+
                 $details = [
                     'title' => 'Congratulation you are hired',
-                    'body' => "By ".$data->name
+                    'body' => "By " . $data->name
                 ];
-    
-                dispatch(new \App\Jobs\SendEmailQueueJob($candidate->email,$details));
-    
-                Wallet::where('company_id', 1)->increment('coins',5);
-    
+
+                dispatch(new \App\Jobs\SendEmailQueueJob($candidate->email, $details));
+
+                Wallet::where('company_id', 1)->increment('coins', 5);
+
                 $message = 'Hiring email send successfully';
-            }else{
+            } else {
                 $status = 500;
                 $message = 'Contact Candidate first.';
             }
