@@ -13,7 +13,6 @@ class CandidateController extends Controller
 {
     public function index()
     {
-        $candidates = Candidate::with(['contact', 'hired'])->get();
         $coins = Company::find(1)->wallet->coins;
 
         return view('candidates.index', compact('candidates', 'coins'));
